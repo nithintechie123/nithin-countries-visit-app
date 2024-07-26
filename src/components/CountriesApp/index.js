@@ -1,20 +1,17 @@
 import {Component} from 'react'
 
+import VisitedCountry from '../VisitedCountry'
+
 import {
   CountriesAppContainer,
   CountriesHeading,
   CountriesContainer,
-  EachCountryItem,
-  EachCountryName,
-  Button,
   VisitedCountriesHeading,
   VisitedCountriesContainer,
-  VisitedCountryItem,
-  ImageElement,
-  VisitedCountryNameRemoveButtonContainer,
-  VisitedCountryName,
-  RemoveButton,
+  NoCountryViewContainer,
+  NoCountryText,
 } from '../../styledComponents'
+import CountryItem from '../CountryItem'
 
 const initialCountriesList = [
   {
@@ -43,7 +40,7 @@ const initialCountriesList = [
     name: 'India',
     imageUrl:
       'https://assets.ccbp.in/frontend/react-js/visit-countries-india-img.png',
-    isVisited: true,
+    isVisited: false,
   },
   {
     id: '603c3568-13b0-11ec-82a8-0242ac130003',
@@ -78,7 +75,7 @@ const initialCountriesList = [
     name: 'United Kingdom',
     imageUrl:
       'https://assets.ccbp.in/frontend/react-js/visit-countries-united-kingdom-img.png',
-    isVisited: true,
+    isVisited: false,
   },
   {
     id: 'e76da8ca-bc48-4981-902b-a4d2d46feb6d',
@@ -90,34 +87,75 @@ const initialCountriesList = [
 ]
 
 class CountriesApp extends Component {
-  state = {visitedCountriesList: []}
+  state = {visitedCountriesList: initialCountriesList}
+
+  clickedVisitButton = id => {
+    const {visitedCountriesList} = this.state
+
+    const visitedCountryList = visitedCountriesList.map(eachItem => {
+      if (eachItem.id === id) {
+        const visitedCountry = {...eachItem, isVisited: !eachItem.isVisited}
+        return visitedCountry
+      }
+      return eachItem
+    })
+    this.setState({visitedCountriesList: visitedCountryList})
+  }
+
+  clickedRemoveBtn = id => {
+    const {visitedCountriesList} = this.state
+    const removedCountryList = visitedCountriesList.map(eachItem => {
+      if (eachItem.id === id) {
+        const removedItem = {...eachItem, isVisited: false}
+        return removedItem
+      }
+      return eachItem
+    })
+    this.setState({visitedCountriesList: removedCountryList})
+  }
+
+  renderNoCountryView = () => (
+    <NoCountryViewContainer>
+      <NoCountryText>No Countries Visited Yet!</NoCountryText>
+    </NoCountryViewContainer>
+  )
 
   render() {
+    const {visitedCountriesList} = this.state
+
+    const updatedList = visitedCountriesList.filter(
+      eachCountry => eachCountry.isVisited === true,
+    )
+
+    const updatedListLength = updatedList.length
+
     return (
       <CountriesAppContainer>
         <CountriesHeading>Countries</CountriesHeading>
         <CountriesContainer>
-          {initialCountriesList.map(eachCountry => (
-            <EachCountryItem key={eachCountry.id}>
-              <EachCountryName>{eachCountry.name}</EachCountryName>
-              <Button type="button" onClick={this.onClickVisitButton}>
-                Visit
-              </Button>
-            </EachCountryItem>
+          {visitedCountriesList.map(eachCountry => (
+            <CountryItem
+              key={eachCountry.id}
+              eachCountryDetails={eachCountry}
+              clickedVisitButton={this.clickedVisitButton}
+              isActive={updatedList.isVisited}
+            />
           ))}
         </CountriesContainer>
         <VisitedCountriesHeading>Visited Countries</VisitedCountriesHeading>
-        <VisitedCountriesContainer>
-          {initialCountriesList.map(eachCountry => (
-            <VisitedCountryItem key={eachCountry.id}>
-              <ImageElement src={eachCountry.imageUrl} alt="thumbnail" />
-              <VisitedCountryNameRemoveButtonContainer>
-                <VisitedCountryName>{eachCountry.name}</VisitedCountryName>
-                <RemoveButton>Remove</RemoveButton>
-              </VisitedCountryNameRemoveButtonContainer>
-            </VisitedCountryItem>
-          ))}
-        </VisitedCountriesContainer>
+        {updatedListLength > 0 ? (
+          <VisitedCountriesContainer>
+            {updatedList.map(eachItem => (
+              <VisitedCountry
+                key={eachItem.id}
+                visitedCountryDetails={eachItem}
+                clickedRemoveBtn={this.clickedRemoveBtn}
+              />
+            ))}
+          </VisitedCountriesContainer>
+        ) : (
+          this.renderNoCountryView()
+        )}
       </CountriesAppContainer>
     )
   }

@@ -47,14 +47,14 @@ export const EachCountryName = styled.p`
 `
 
 export const Button = styled.button`
-  background-color: #3b82f6;
+  background-color: ${props => (props.visitStatus ? 'transparent' : '#3b82f6')};
   border-radius: 4px;
   border-width: 0px;
   font-family: 'Roboto';
   font-weight: 500;
   padding: 10px;
   width: 90px;
-  color: #ffffff;
+  color: ${props => (props.visitStatus ? '#94a3b8' : '#ffffff')};
   cursor: pointer;
 `
 export const VisitedCountriesHeading = styled.h1`
@@ -105,4 +105,18 @@ export const RemoveButton = styled.button`
   padding: 5px;
   cursor: pointer;
   outline: none;
+`
+
+export const NoCountryViewContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  height: 100vh;
+`
+
+export const NoCountryText = styled.h1`
+  color: #ffffff;
+  font-weight: 400;
+  font-family: 'Roboto';
 `
